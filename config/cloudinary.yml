@@ -1,0 +1,22 @@
+---
+development:
+  cloud_name: dhgsrpwf7
+  api_key: '371679292377297'
+  api_secret: L2IEXmKEr9PGVjGyuztNxLcIa9E
+  enhance_image_tag: true
+  static_image_support: false
+  secure: true
+production:
+  cloud_name: dhgsrpwf7
+  api_key: '371679292377297'
+  api_secret: L2IEXmKEr9PGVjGyuztNxLcIa9E
+  enhance_image_tag: true
+  static_image_support: true
+  secure: true
+test:
+  cloud_name: dhgsrpwf7
+  api_key: '371679292377297'
+  api_secret: L2IEXmKEr9PGVjGyuztNxLcIa9E
+  enhance_image_tag: true
+  static_image_support: false
+  secure: true
