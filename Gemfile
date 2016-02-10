@@ -9,7 +9,7 @@ gem 'sqlite3'
 # The CarrierWave GEM should be loaded before the Cloudinary GEM
 gem 'carrierwave' 
 
-# Image management service
+# Image management service provider
 gem 'cloudinary'
 
 # Use SCSS for stylesheets
