@@ -151,3 +151,37 @@ Open your model file (in this case image.rb) and mount the uploader if not yet m
   class Image < ActiveRecord::Base
     mount_uploader :image, ImageUploader
   end
+  
+That's it. Carrierwave is intergrated. Now let us do Cloudinary part.
+
+=== Cloudinary integration
+
+Cloudinary is a great service if you need to deal with images. Sign up for free account and use your free quota, which is enough to get you started. You need to find on newly created account cloud_name, api_key and api_secret to perform secure API calls to Cloudinary. More info http://cloudinary.com/documentation/rails_integration
+
+Under the config directory create a cloudinary.yml configuration file and store cloud_name, api_key and api_secret. Your cloudinary.yml should look similar to this:
+
+  cloudinary.yml
+  
+  ---
+  development:
+    cloud_name: cloud_name
+    api_key: 'api_key'
+    api_secret: api_secret
+    enhance_image_tag: true
+    static_image_support: false
+    secure: true
+  production:
+    cloud_name: cloud_name
+    api_key: 'api_key'
+    api_secret: api_secret
+    enhance_image_tag: true
+    static_image_support: true
+    secure: true
+  test:
+    cloud_name: cloud_name
+    api_key: 'api_key'
+    api_secret: api_secret
+    enhance_image_tag: true
+    static_image_support: false
+    secure: true
+
