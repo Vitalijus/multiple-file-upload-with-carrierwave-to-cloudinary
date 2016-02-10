@@ -91,8 +91,8 @@ Second Image model should look similar to this:
   image.rb
   
   class Image < ActiveRecord::Base
-  	mount_uploader :image, ImageUploader
-  	belongs_to :author
+    mount_uploader :image, ImageUploader
+    belongs_to :author
   end
   
 Later on we should be able to delete images we don't like. To do that we have to generate Image controller and add destroy action:
@@ -100,17 +100,23 @@ Later on we should be able to delete images we don't like. To do that we have to
   rails g controller Images destroy
   
   def destroy
-  	@image = Image.find(params[:id])
-	  @image.destroy
+    @image = Image.find(params[:id])
+    @image.destroy
 		
-	  respond_to do |format|
+    respond_to do |format|
       format.html { redirect_to :back, notice: 'Image has been deleted' } 
       format.json { head :no_content }
       format.js   { render layout: false}
     end
   end
   
-At this point app should be working and you can check that in your rails console, however views are missing. Before adding views this article will describe on how to integrate Carrierwave and Cloudinary.
+And in routes.rb add following line if you find it necessary:
+
+  routes.rb
+  
+  resources :images, only: [:destroy]
+  
+We are still missing some views to see how it works on the screen, however you can experinment with rails console and check if it works as expected. Before adding views this article will describe on how to integrate Carrierwave and Cloudinary.
 
 === Carrierwave integration 
 
@@ -136,7 +142,7 @@ Customize your newly uploader so it should look similar to this:
 
     include Cloudinary::CarrierWave
   
-    version :image_thumb do
+    version :authors_image do
       process :resize_to_fill => [60, 60]
     end
   
@@ -185,3 +191,27 @@ Under the config directory create a cloudinary.yml configuration file and store 
     static_image_support: false
     secure: true
 
+=== Finally Views
+
+Last part of this article. All our logic is concentrated in views, without them would be hard to comprehend how it's actually feels like to upload an image to cloud service. We don't have any views for Image model because we will use fields_for helper, which with the help of accets_nested_attributes_for method gives us ability to save all records from one view. Add to new.html.erb file:
+
+  <%= form_for(@author, :html => { multipart: true }) do |f| %>
+  ...
+    <%= f.fields_for :image do |ff| %>
+      <div class="field">
+        <%= ff.label :image %><br>
+        <%= ff.file_field :image, multiple: true, name: "images[]" %>
+      </div>
+    <% end %>
+  ...
+  <% end %>
+
+Below is a link to delete an image:
+
+  <% @author.images.each do |image| %>
+    <%= image_tag image.image_url(:authors_image) %><br>
+    <%= link_to "Delete", image_path(image), :method => :delete %>
+  <% end %>
+  
+That's pretty much it. You now should be able to upload multiple files to Cloudinary with Carrirwave. Feel free to initiate an issue if you have any problems. Bey!
+  
