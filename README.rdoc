@@ -68,23 +68,6 @@ Here comes most important part of this article. While creating author we have to
       end
     end
   end
-  
-  def update
-    respond_to do |format|
-      if @author.update(author_params)
-        if params[:images]
-          params[:images].each do |image|
-            @author.images.create(image: image)
-          end
-        end
-        format.html { redirect_to @author, notice: 'Author was successfully updated.' }
-        format.json { head :no_content }
-      else
-        format.html { render action: 'edit' }
-        format.json { render json: @author.errors, status: :unprocessable_entity }
-      end
-    end
-  end
 
 Second Image model should look similar to this:
 
@@ -102,7 +85,6 @@ Later on we should be able to delete images we don't like. To do that we have to
   def destroy
     @image = Image.find(params[:id])
     @image.destroy
-		
     respond_to do |format|
       format.html { redirect_to :back, notice: 'Image has been deleted' } 
       format.json { head :no_content }
@@ -120,7 +102,7 @@ We are still missing some views to see how it works on the screen, however you c
 
 === Carrierwave integration 
 
-Integration of Carrierwave is pretty much straightforward and is [well documented.](https://github.com/carrierwaveuploader/carrierwave)
+Integration of Carrierwave is pretty much straightforward and is well documented. github.com/carrierwaveuploader/carrierwave
 
 *Note:* The Carrierwave gem should be loaded before the Cloudinary gem in your Gemfile.
 
