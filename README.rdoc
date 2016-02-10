@@ -1,28 +1,22 @@
-== README
+== Upload multiple files to Cloudinary with Carrierwave
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+=== Introduction
 
-Things you may want to cover:
+Cloudinary is a cloud-based service that provides an end-to-end image management solution including uploads, 
+storage, administration, image manipulation, and delivery.
 
-* Ruby version
+Cloudinary GEM provides a plugin for CarrierWave. Using it means that you enjoy the benefits of CarrierWave for easily 
+uploading images from HTML forms to your model, while enjoying the great benefits of Cloudinary: uploaded images are 
+stored in cloud, transformed and manipulated in the cloud, and delivered automatically through a CDN.
 
-* System dependencies
+=== Carrierwave integration 
 
-* Configuration
+Below are quick instructions for using Cloudinary with Carrirwave on your Rails project.
 
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+=======Note: The CarrierWave gem should be loaded before the Cloudinary gem.
+gem 'carrierwave'
+gem 'cloudinary'
 
 
-Please feel free to use a different markup language if you do not plan to run
-<tt>rake doc:app</tt>.
+
+I have been looking for a while at the Cloudinary's documentation on how to upload multiple files to it. 
