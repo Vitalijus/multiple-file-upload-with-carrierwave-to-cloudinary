@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 gem 'rails', '4.0.8'
 
 # Use sqlite3 as the database for Active Record
-gem 'sqlite3'
+# gem 'sqlite3'
 
 # The CarrierWave GEM should be loaded before the Cloudinary GEM
 gem 'carrierwave' 
@@ -37,6 +37,17 @@ group :doc do
   # bundle exec rake doc:rails generates the API under doc/api.
   gem 'sdoc', require: false
 end
+
+group :development do
+	gem 'sqlite3'
+end
+
+group :production, :test do
+	gem 'pg'
+end
+
+gem 'rails_12factor'
+ruby '2.0.0'
 
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
