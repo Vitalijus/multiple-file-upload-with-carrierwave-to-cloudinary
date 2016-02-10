@@ -20,11 +20,13 @@ Generated Author model should look similar to this:
   author.rb
   
   class Author < ActiveRecord::Base
-	  has_many :images, :dependent => :destroy
-	  accepts_nested_attributes_for :images, allow_destroy: true
+    has_many :images, :dependent => :destroy
+    accepts_nested_attributes_for :images, allow_destroy: true
   end
 
-First, in Author's model we see that association have been used with Image model, where author has_many images. Second, we use accepts_nested_attributes_for :images so we can use fields_for helper in view, which allows us to add "Image model fields in Author's model view". Fields_for helper sort of nested with form_for helper.
+First, in Author's model we see that association have been used with Image model, where author has_many images. 
+
+Second, we use accepts_nested_attributes_for :images so we can use fields_for helper in view, which allows us to add "Image model fields in Author's model view". Fields_for helper sort of nested with form_for helper.
 
 Accepts_nested_attributes_for requires us to take some more actions. Make sure to nest strong params to be able to manipulate associated records.
 
@@ -34,7 +36,55 @@ Accepts_nested_attributes_for requires us to take some more actions. Make sure t
     params.require(:author).permit(:name, images_attributes: [:image, :author_id])
   end
   
+We also have to use build method just to create a new object in memory so that the view can take this object and display something, especially for a form.
 
+  authors_controller.rb
+  
+  def new
+    @author = Author.new
+    @image = @author.images.build
+  end
+  
+Here comes most important part of this article. While creating author we have to make sure that associated model, which is Image in our case is created as well. We do that by cheking if params[:images] present and iterate through it in create action. The same applies for update action:
+
+  authors_controller.rb
+  
+  def create
+    @author = Author.new(author_params)
+
+    respond_to do |format|
+      if @author.save
+        if params[:images]
+          params[:images].each do |image|
+            @author.images.create(image: image)
+          end
+        end
+
+        format.html { redirect_to @author, notice: 'Author was successfully created.' }
+        format.json { render action: 'show', status: :created, location: @author }
+      else
+        format.html { render action: 'new' }
+        format.json { render json: @author.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+  
+  def update
+    respond_to do |format|
+      if @author.update(author_params)
+        if params[:images]
+          params[:images].each do |image|
+            @author.images.create(image: image)
+          end
+        end
+        format.html { redirect_to @author, notice: 'Author was successfully updated.' }
+        format.json { head :no_content }
+      else
+        format.html { render action: 'edit' }
+        format.json { render json: @author.errors, status: :unprocessable_entity }
+      end
+    end
+  end
 
 
 === Carrierwave integration 
