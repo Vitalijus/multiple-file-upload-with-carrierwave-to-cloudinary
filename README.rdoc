@@ -11,7 +11,7 @@ stored in cloud, transformed and manipulated in the cloud, and delivered automat
 
 === Carrierwave integration 
 
-Below are quick instructions for using Cloudinary with Carrirwave on your Rails project.
+Integration of Carrierwave is pretty much straightforward and is well documented. [I'm an inline-style link](https://www.google.com)
 
 =======Note: The CarrierWave gem should be loaded before the Cloudinary gem.
 gem 'carrierwave'
