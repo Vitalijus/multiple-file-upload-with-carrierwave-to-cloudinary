@@ -14,3 +14,5 @@ stored in cloud, transformed and manipulated in the cloud, and delivered automat
 Integration of Carrierwave is pretty much straightforward and is well documented.
 
 *Note:* The Carrierwave gem should be loaded before the Cloudinary gem.
+
+http://github.com - automatic!
