@@ -14,10 +14,3 @@ stored in cloud, transformed and manipulated in the cloud, and delivered automat
 Integration of Carrierwave is pretty much straightforward and is [well documented.](https://www.google.com)
 
 *Note:* The Carrierwave gem should be loaded before the Cloudinary gem.
-
-`gem 'carrierwave'`
-`gem 'cloudinary'`
-
-
-
-I have been looking for a while at the Cloudinary's documentation on how to upload multiple files to it. 
