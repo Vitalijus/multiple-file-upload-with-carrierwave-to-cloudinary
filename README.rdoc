@@ -9,10 +9,70 @@ Cloudinary GEM provides a plugin for CarrierWave. Using it means that you enjoy 
 uploading images from HTML forms to your model, while enjoying the great benefits of Cloudinary: uploaded images are 
 stored in cloud, transformed and manipulated in the cloud, and delivered automatically through a CDN.
 
+=== Getting started
+
+Like always we start by generating new rails app. In this app I use for database: gem 'sqlite3' in development and gem "pg" (because Heroku doesn't work with sqlite3) in environment and testing.
+
+Next, we generate two models: rails g scaffold Author name:string and rails g model Image author_id:integer image:string. First model is generated using scaffold, which is a quick way to generate some of the major pieces of an application. Second command generate just empty image.rb file.
+
+Generated Author model should look similar to this:
+
+  author.rb
+  
+  class Author < ActiveRecord::Base
+	  has_many :images, :dependent => :destroy
+	  accepts_nested_attributes_for :images, allow_destroy: true
+  end
+
+First, in Author's model we see that association have been used with Image model, where author has_many images. Second, we use accepts_nested_attributes_for :images so we can use fields_for helper in view, which allows us to add "Image model fields in Author's model view". Fields_for helper sort of nested with form_for helper.
+
+Accepts_nested_attributes_for requires us to take some more actions. Make sure to nest strong params to be able to manipulate associated records.
+
+  authors_controller.rb
+  
+  def author_params
+    params.require(:author).permit(:name, images_attributes: [:image, :author_id])
+  end
+  
+
+
+
 === Carrierwave integration 
 
-Integration of Carrierwave is pretty much straightforward and is well documented.
+Integration of Carrierwave is pretty much straightforward and is [well documented.](https://github.com/carrierwaveuploader/carrierwave) This article still going to lead you through all steps.
 
 *Note:* The Carrierwave gem should be loaded before the Cloudinary gem.
 
-http://github.com - automatic!
+  gem 'carrierwave'
+
+  gem 'cloudinary'
+
+Start off by generating Carrierwave uploader:
+
+  rails generate uploader Avatar
+
+This should give you a file in:
+
+  app/uploaders/avatar_uploader.rb
+
+Customize your newly uploader so it should look similar to this:
+
+  class AvatarUploader < CarrierWave::Uploader::Base
+
+    include Cloudinary::CarrierWave
+  
+    version :avatar_thumb do
+      process :resize_to_fill => [60, 60]
+    end
+  
+    def extension_white_list
+      %w(jpg jpeg gif png)
+    end
+  
+  end
+  
+Make sure you have generated migration with column `t.string "avatar"`. Open your model file (in this case user.rb) and mount the uploader:
+
+  class User < ActiveRecord::Base
+    mount_uploader :avatar, AvatarUploader
+  end
