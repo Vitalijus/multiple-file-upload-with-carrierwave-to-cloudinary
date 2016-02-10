@@ -1,28 +1,203 @@
-== README
+== Upload multiple files to Cloudinary with Carrierwave
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+*DEMO* take a look before you start:
 
-Things you may want to cover:
+https://damp-brushlands-82606.herokuapp.com/
 
-* Ruby version
+=== Introduction
 
-* System dependencies
+Cloudinary is a cloud-based service that provides an end-to-end image management solution including uploads, 
+storage, administration, image manipulation, and delivery.
 
-* Configuration
+Cloudinary GEM provides a plugin for CarrierWave. Using it means that you enjoy the benefits of CarrierWave for easily 
+uploading images from HTML forms to your model, while enjoying the great benefits of Cloudinary: uploaded images are 
+stored in cloud, transformed and manipulated in the cloud, and delivered automatically through a CDN.
 
-* Database creation
+=== Getting started
 
-* Database initialization
+Like always we start by generating new rails app. In this app I use for database: gem 'sqlite3' in development and gem "pg" (because Heroku doesn't work with sqlite3) in environment and testing.
 
-* How to run the test suite
+Next, we generate two models: rails g scaffold Author name:string and rails g model Image author_id:integer image:string. First model is generated using scaffold, which is a quick way to generate some of the major pieces of an application. Second command generate just empty image.rb file.
 
-* Services (job queues, cache servers, search engines, etc.)
+Generated Author model should look similar to this:
 
-* Deployment instructions
+  author.rb
+  
+  class Author < ActiveRecord::Base
+    has_many :images, :dependent => :destroy
+    accepts_nested_attributes_for :images, allow_destroy: true
+  end
 
-* ...
+First, in Author's model we see that association have been used with Image model, where author has_many images. 
 
+Second, we use accepts_nested_attributes_for :images so we can use fields_for helper in view, which allows us to add "Image model fields in Author's model view". Fields_for helper sort of nested with form_for helper.
 
-Please feel free to use a different markup language if you do not plan to run
-<tt>rake doc:app</tt>.
+Accepts_nested_attributes_for requires us to take some more actions. Make sure to nest strong params to be able to manipulate associated records.
+
+  authors_controller.rb
+  
+  def author_params
+    params.require(:author).permit(:name, images_attributes: [:image, :author_id])
+  end
+  
+We also have to use build method just to create a new object in memory so that the view can take this object and display something, especially for a form.
+
+  authors_controller.rb
+  
+  def new
+    @author = Author.new
+    @image = @author.images.build
+  end
+  
+Here comes most important part of this article. While creating author we have to make sure that associated model, which is Image in our case is created as well. We do that by cheking if params[:images] present and iterate through it in create action. The same applies for update action:
+
+  authors_controller.rb
+  
+  def create
+    @author = Author.new(author_params)
+
+    respond_to do |format|
+      if @author.save
+        if params[:images]
+          params[:images].each do |image|
+            @author.images.create(image: image)
+          end
+        end
+
+        format.html { redirect_to @author, notice: 'Author was successfully created.' }
+        format.json { render action: 'show', status: :created, location: @author }
+      else
+        format.html { render action: 'new' }
+        format.json { render json: @author.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+Second Image model should look similar to this:
+
+  image.rb
+  
+  class Image < ActiveRecord::Base
+    mount_uploader :image, ImageUploader
+    belongs_to :author
+  end
+  
+Later on we should be able to delete images we don't like. To do that we have to generate Image controller and add destroy action:
+
+  rails g controller Images destroy
+  
+  def destroy
+    @image = Image.find(params[:id])
+    @image.destroy
+    respond_to do |format|
+      format.html { redirect_to :back, notice: 'Image has been deleted' } 
+      format.json { head :no_content }
+      format.js   { render layout: false}
+    end
+  end
+  
+And in routes.rb add following line if you find it necessary:
+
+  routes.rb
+  
+  resources :images, only: [:destroy]
+  
+We are still missing some views to see how it works on the screen, however you can experinment with rails console and check if it works as expected. Before adding views this article will describe on how to integrate Carrierwave and Cloudinary.
+
+=== Carrierwave integration 
+
+Integration of Carrierwave is pretty much straightforward and is well documented. github.com/carrierwaveuploader/carrierwave
+
+*Note:* The Carrierwave gem should be loaded before the Cloudinary gem in your Gemfile.
+
+  gem 'carrierwave'
+
+  gem 'cloudinary'
+
+Start off by generating Carrierwave uploader:
+
+  rails generate uploader Image
+
+This should give you a file in:
+
+  app/uploaders/image_uploader.rb
+
+Customize your newly uploader so it should look similar to this:
+
+  class ImageUploader < CarrierWave::Uploader::Base
+
+    include Cloudinary::CarrierWave
+  
+    version :authors_image do
+      process :resize_to_fill => [60, 60]
+    end
+  
+    def extension_white_list
+      %w(jpg jpeg gif png)
+    end
+  
+  end
+  
+Open your model file (in this case image.rb) and mount the uploader if not yet mounted:
+
+  class Image < ActiveRecord::Base
+    mount_uploader :image, ImageUploader
+  end
+  
+That's it. Carrierwave is intergrated. Now let us do Cloudinary part.
+
+=== Cloudinary integration
+
+Cloudinary is a great service if you need to deal with images. Sign up for free account and use your free quota, which is enough to get you started. You need to find on newly created account cloud_name, api_key and api_secret to perform secure API calls to Cloudinary. More info http://cloudinary.com/documentation/rails_integration
+
+Under the config directory create a cloudinary.yml configuration file and store cloud_name, api_key and api_secret. Your cloudinary.yml should look similar to this:
+
+  cloudinary.yml
+  
+  ---
+  development:
+    cloud_name: cloud_name
+    api_key: 'api_key'
+    api_secret: api_secret
+    enhance_image_tag: true
+    static_image_support: false
+    secure: true
+  production:
+    cloud_name: cloud_name
+    api_key: 'api_key'
+    api_secret: api_secret
+    enhance_image_tag: true
+    static_image_support: true
+    secure: true
+  test:
+    cloud_name: cloud_name
+    api_key: 'api_key'
+    api_secret: api_secret
+    enhance_image_tag: true
+    static_image_support: false
+    secure: true
+
+=== Finally Views
+
+Last part of this article. All our logic is concentrated in views, without them would be hard to comprehend how it's actually feels like to upload an image to cloud service. We don't have any views for Image model because we will use fields_for helper, which with the help of accets_nested_attributes_for method gives us ability to save all records from one view. Add to new.html.erb file:
+
+  <%= form_for(@author, :html => { multipart: true }) do |f| %>
+  ...
+    <%= f.fields_for :image do |ff| %>
+      <div class="field">
+        <%= ff.label :image %><br>
+        <%= ff.file_field :image, multiple: true, name: "images[]" %>
+      </div>
+    <% end %>
+  ...
+  <% end %>
+
+Below is a link to delete an image:
+
+  <% @author.images.each do |image| %>
+    <%= image_tag image.image_url(:authors_image) %><br>
+    <%= link_to "Delete", image_path(image), :method => :delete %>
+  <% end %>
+  
+That's pretty much it. You now should be able to upload multiple files to Cloudinary with Carrirwave. Feel free to initiate an issue if you have any problems. Bey!
+  
