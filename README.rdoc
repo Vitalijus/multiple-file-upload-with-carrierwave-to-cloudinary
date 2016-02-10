@@ -1,6 +1,6 @@
 == Upload multiple files to Cloudinary with Carrierwave
 
-Before you start take a look at *demo*
+*DEMO* take a look before you start:
 
 https://damp-brushlands-82606.herokuapp.com/
 
