@@ -86,12 +86,37 @@ Here comes most important part of this article. While creating author we have to
     end
   end
 
+Second Image model should look similar to this:
+
+  image.rb
+  
+  class Image < ActiveRecord::Base
+  	mount_uploader :image, ImageUploader
+  	belongs_to :author
+  end
+  
+Later on we should be able to delete images we don't like. To do that we have to generate Image controller and add destroy action:
+
+  rails g controller Images destroy
+  
+  def destroy
+  	@image = Image.find(params[:id])
+	  @image.destroy
+		
+	  respond_to do |format|
+      format.html { redirect_to :back, notice: 'Image has been deleted' } 
+      format.json { head :no_content }
+      format.js   { render layout: false}
+    end
+  end
+  
+At this point app should be working and you can check that in your rails console, however views are missing. Before adding views this article will describe on how to integrate Carrierwave and Cloudinary.
 
 === Carrierwave integration 
 
-Integration of Carrierwave is pretty much straightforward and is [well documented.](https://github.com/carrierwaveuploader/carrierwave) This article still going to lead you through all steps.
+Integration of Carrierwave is pretty much straightforward and is [well documented.](https://github.com/carrierwaveuploader/carrierwave)
 
-*Note:* The Carrierwave gem should be loaded before the Cloudinary gem.
+*Note:* The Carrierwave gem should be loaded before the Cloudinary gem in your Gemfile.
 
   gem 'carrierwave'
 
@@ -99,19 +124,19 @@ Integration of Carrierwave is pretty much straightforward and is [well documente
 
 Start off by generating Carrierwave uploader:
 
-  rails generate uploader Avatar
+  rails generate uploader Image
 
 This should give you a file in:
 
-  app/uploaders/avatar_uploader.rb
+  app/uploaders/image_uploader.rb
 
 Customize your newly uploader so it should look similar to this:
 
-  class AvatarUploader < CarrierWave::Uploader::Base
+  class ImageUploader < CarrierWave::Uploader::Base
 
     include Cloudinary::CarrierWave
   
-    version :avatar_thumb do
+    version :image_thumb do
       process :resize_to_fill => [60, 60]
     end
   
@@ -121,8 +146,8 @@ Customize your newly uploader so it should look similar to this:
   
   end
   
-Make sure you have generated migration with column `t.string "avatar"`. Open your model file (in this case user.rb) and mount the uploader:
+Open your model file (in this case image.rb) and mount the uploader if not yet mounted:
 
-  class User < ActiveRecord::Base
-    mount_uploader :avatar, AvatarUploader
+  class Image < ActiveRecord::Base
+    mount_uploader :image, ImageUploader
   end
