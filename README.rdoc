@@ -11,11 +11,12 @@ stored in cloud, transformed and manipulated in the cloud, and delivered automat
 
 === Carrierwave integration 
 
-Integration of Carrierwave is pretty much straightforward and is well documented. [I'm an inline-style link](https://www.google.com)
+Integration of Carrierwave is pretty much straightforward and is [well documented.](https://www.google.com)
 
-=======Note: The CarrierWave gem should be loaded before the Cloudinary gem.
-gem 'carrierwave'
-gem 'cloudinary'
+*Note:* The Carrierwave gem should be loaded before the Cloudinary gem.
+
+`gem 'carrierwave'`
+`gem 'cloudinary'`
 
 
 
