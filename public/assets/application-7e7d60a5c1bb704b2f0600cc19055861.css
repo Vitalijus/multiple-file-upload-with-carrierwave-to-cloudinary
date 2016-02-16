@@ -1,0 +1,66 @@
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, vendor/assets/stylesheets,
+ * or vendor/assets/stylesheets of plugins, if any, can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the top of the
+ * compiled file, but it's generally better to create a new file per style scope.
+ *
+
+
+ */
+
+
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800);
+
+body {
+	margin: 0;
+	background-color: #F5F5F5;
+	font-family: 'Open Sans', arial, sans-serif;
+}
+/* line 5, /home/vitalijus/rails/gallery/app/assets/stylesheets/authors.css.scss */
+table {
+  width: 960px;
+  margin: auto;
+  margin-top: 50px;
+  padding: 20px;
+  background-color: #fff;
+  border: 1px solid #f0f0f0;
+}
+
+/* line 14, /home/vitalijus/rails/gallery/app/assets/stylesheets/authors.css.scss */
+th {
+  font-weight: 800;
+  font-size: 18px;
+  padding-bottom: 15px;
+}
+
+/* line 20, /home/vitalijus/rails/gallery/app/assets/stylesheets/authors.css.scss */
+td {
+  text-align: center;
+  font-size: 14px;
+  padding: 3px 0;
+}
+
+/* line 26, /home/vitalijus/rails/gallery/app/assets/stylesheets/authors.css.scss */
+.link-wrapper {
+  width: 100%;
+  margin: auto;
+  padding-top: 50px;
+  text-align: center;
+}
+
+/* line 33, /home/vitalijus/rails/gallery/app/assets/stylesheets/authors.css.scss */
+.new-author-link {
+  font-size: 25px;
+  font-weight: 700;
+  color: #333;
+  text-decoration: none;
+}
+
+/* line 40, /home/vitalijus/rails/gallery/app/assets/stylesheets/authors.css.scss */
+.new-author-link:hover {
+  color: #F45D5D;
+}
