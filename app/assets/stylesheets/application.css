@@ -11,3 +11,11 @@
  *= require_self
  *= require_tree .
  */
+
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800);
+
+body {
+	margin: 0;
+	background-color: #F5F5F5;
+	font-family: 'Open Sans', arial, sans-serif;
+}
