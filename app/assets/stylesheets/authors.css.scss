@@ -2,6 +2,15 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
+.header {
+	max-width: 960px;
+	margin: auto;
+	margin-top: 50px;
+	text-align: center;
+	font-weight: 800;
+	font-size: 25px;
+}
+
 table {
 	width: 960px;
 	margin: auto;
